@@ -119,6 +119,7 @@ private:
     ros::Timer _mapTimer;
     ros::Publisher edt_msg_pub;
     GIE::CostMap cost_map_msg;
+    GIE::CostMap cost_map_lococc;
 
     // Map updater
     HokuyoMapMaker _hok_map_maker;
@@ -154,6 +155,7 @@ private:
     PntCldI::Ptr _dbg_pnt_cld;
     ros::Publisher  _edt_rviz_pub;
     ros::Publisher  _occ_rviz_pub;
+    ros::Publisher  _occ_costmap_pub;
     ros::Publisher _glb_edt_rviz_pub;
     ros::Publisher _glb_ogm_rviz_pub;
     ros::Publisher _dbg_rviz_pub;
@@ -188,6 +190,16 @@ private:
         int3 crd;
         float3 pos;
         int idx;
+        cost_map_lococc.payload8.clear();
+        cost_map_lococc.x_size = _loc_map->_local_size.x;
+        cost_map_lococc.y_size = _loc_map->_local_size.y;
+        cost_map_lococc.z_size = _loc_map->_local_size.z;
+        cost_map_lococc.width = _loc_map->_voxel_width;
+        cost_map_lococc.x_origin = cost_map_lococc.width * _loc_map->_pvt.x;
+        cost_map_lococc.y_origin = cost_map_lococc.width * _loc_map->_pvt.y;
+        cost_map_lococc.z_origin = cost_map_lococc.width * _loc_map->_pvt.z;
+        cost_map_lococc.type = 0;
+        cost_map_lococc.payload8.resize(cost_map_lococc.x_size * cost_map_lococc.y_size * cost_map_lococc.z_size);
         for (crd.x=0;crd.x<_loc_map->_local_size.x;crd.x++)
         {
             for (crd.y=0;crd.y<_loc_map->_local_size.y;crd.y++)
@@ -200,14 +212,18 @@ private:
 
                     pos = _loc_map->coord2pos(_loc_map->loc2glb(crd));
 
-                    if(param.display_loc_ogm && _loc_map->glb_type_H[idx] == VOXTYPE_OCCUPIED)
+                    if(param.display_loc_ogm)
                     {
                         pcl::PointXYZI occu_pt;
                         occu_pt.x = pos.x;
                         occu_pt.y = pos.y;
                         occu_pt.z = pos.z;
                         occu_pt.intensity = _loc_map->glb_type_H[idx];
-                        _occ_pnt_cld->points.push_back (occu_pt);
+                        // _occ_all_cld->points.push_back(occu_pt);
+                        cost_map_lococc.payload8[idx] = _loc_map->glb_type_H[idx];
+                        if (_loc_map->glb_type_H[idx] == VOXTYPE_OCCUPIED){
+                            _occ_pnt_cld->points.push_back (occu_pt);
+                        }
                     }
 
                     if(param.display_loc_edt)
@@ -225,9 +241,16 @@ private:
         }
         if(param.display_loc_ogm)
         {
-            pcl_conversions::toPCL(ros::Time::now(), _occ_pnt_cld->header.stamp);
+            auto time_now = ros::Time::now();
+            pcl_conversions::toPCL(time_now, _occ_pnt_cld->header.stamp);
             _occ_rviz_pub.publish (_occ_pnt_cld);
             _occ_pnt_cld->clear();
+
+            cost_map_lococc.header.stamp = time_now;
+            _occ_costmap_pub.publish(cost_map_lococc);
+            // pcl_conversions::toPCL(time_now, _occ_all_cld->header.stamp);
+            // _occ_all_pub.publish(_occ_all_cld);
+            // _occ_all_cld->clear();
         }
 
         if(param.display_loc_edt)

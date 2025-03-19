@@ -1,0 +1,37 @@
+for_motion_planner: false
+display_loc_edt: false
+display_loc_ogm: true
+display_glb_edt: false
+display_glb_ogm: true
+vis_interval: 1
+vis_height: 1
+hit_prob: 0.9
+mis_prob: 0.1
+
+# profile the rms every time the visualization msg is published
+profile_loc_rms: false
+profile_glb_rms: false
+log_name: "test.csv"
+
+occupancy_threshold: 80
+
+voxel_width: 0.20
+
+local_size_x: 80
+local_size_y: 80
+local_size_z: 40
+
+ogm:
+  min_height: -40
+  max_height: 40
+
+wave:
+  fast_mode: false
+  cutoff_dist: 100
+
+# params of hash table
+hash:
+
+  bucket_max: 300000
+
+  block_max: 319970

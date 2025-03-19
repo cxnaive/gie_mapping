@@ -87,6 +87,8 @@ VOLMAPNODE::VOLMAPNODE()
         _occ_rviz_pub = _nh.advertise<PntCldI>("occ_map",1);
         _occ_pnt_cld = PntCldI::Ptr(new PntCldI);
         _occ_pnt_cld->header.frame_id = "map";
+        _occ_costmap_pub = _nh.advertise<GIE::CostMap> ("occ_cost_map", 1);
+        cost_map_lococc.header.frame_id = "map";
     }
 
     if (param.display_loc_edt)
@@ -126,7 +128,7 @@ VOLMAPNODE::VOLMAPNODE()
     warmupCuda();
 
     // Timer
-    _mapTimer = _nh.createTimer(ros::Duration(0.5), &VOLMAPNODE::publishMap, this);
+    _mapTimer = _nh.createTimer(ros::Duration(0.1), &VOLMAPNODE::publishMap, this);
 
 }
 //---
@@ -180,7 +182,7 @@ void VOLMAPNODE::publishMap(const ros::TimerEvent&)
 
     _hash_map->updateHashOGM(_msg_mgr.got_pnt_cld  && param.data_case != "laser3D",
                              _time,param.display_glb_ogm && !param.display_glb_edt,
-                             ext_obs);
+                             ext_obs, param.hit_prob, param.mis_prob);
 
 
     GPU_DEV_SYNC(); // only for profiling

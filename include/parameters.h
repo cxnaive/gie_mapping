@@ -44,6 +44,7 @@ struct Parameters
     // local volume size (m)
     float local_size_x, local_size_y, local_size_z;
     float ogm_min_h, ogm_max_h;
+    float hit_prob, mis_prob;
 
     bool fast_mode;
     // stop propagate if dist is greater
@@ -80,6 +81,8 @@ struct Parameters
         nh.param<int>("GIE_mapping/occupancy_threshold",occupancy_threshold,180);
         nh.param<float>("GIE_mapping/vis_height",vis_height,1.0);
         nh.param<float>("GIE_mapping/ugv_height",ugv_height,-1.0);
+        nh.param<float>("GIE_mapping/hit_prob",hit_prob,0.8);
+        nh.param<float>("GIE_mapping/mis_prob",mis_prob,0.5);
 
         nh.param<float>("GIE_mapping/voxel_width",voxel_width,0.2);
         nh.param<float>("GIE_mapping/local_size_x",local_size_x,10);

@@ -113,7 +113,7 @@ void GlbHashMap::allocHashTB()
 }
 
 void GlbHashMap::updateHashOGM(bool input_pyntcld, const int map_ct, bool stream_glb_ogm,
-                               Ext_Obs_Wrapper* ext_obsv)
+                               Ext_Obs_Wrapper* ext_obsv, float hit_prob, float mis_prob)
 {
 
     allocHashTB();
@@ -127,7 +127,9 @@ void GlbHashMap::updateHashOGM(bool input_pyntcld, const int map_ct, bool stream
                                                       ext_obsv->ext_obs_num,
                                                       raw_pointer_cast(&(ext_obsv->obs_activated[0])),
                                                       raw_pointer_cast(&(ext_obsv->obsbbx_ll_D[0])),
-                                                      raw_pointer_cast(&(ext_obsv->obsbbx_ur_D[0])));
+                                                      raw_pointer_cast(&(ext_obsv->obsbbx_ur_D[0])),
+                                                      hit_prob,
+                                                      mis_prob);
     }else
     {
         updateHashOGMWithSensor<<<gridSize,blkSize>>>(*_lMap, *hash_table_D, map_ct,stream_glb_ogm,
@@ -136,7 +138,9 @@ void GlbHashMap::updateHashOGM(bool input_pyntcld, const int map_ct, bool stream
                                                       ext_obsv->ext_obs_num,
                                                       raw_pointer_cast(&(ext_obsv->obs_activated[0])),
                                                       raw_pointer_cast(&(ext_obsv->obsbbx_ll_D[0])),
-                                                      raw_pointer_cast(&(ext_obsv->obsbbx_ur_D[0])));
+                                                      raw_pointer_cast(&(ext_obsv->obsbbx_ur_D[0])),
+                                                      hit_prob,
+                                                      mis_prob);
 
     }
 

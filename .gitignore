@@ -14,3 +14,5 @@ RollingEDT/build-RollingEDT-Desktop_Qt_5_9_1_GCC_64bit-Profile/
 RollingEDT/build-RollingEDT-Desktop_Qt_5_6_2_GCC_64bit-Debug/
 build-RollingEDT-Desktop_Qt_5_9_1_GCC_64bit-Debug/
 build-RollingEDT-Desktop_Qt_5_9_1_GCC_64bit-Release/
+build
+.vscode

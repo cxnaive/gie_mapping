@@ -18,7 +18,7 @@ public:
     void allocHashTB();
 
     void updateHashOGM(bool input_pynt, const int map_ct, bool stream_glb_ogm,
-                       Ext_Obs_Wrapper* ext_obsv);
+                       Ext_Obs_Wrapper* ext_obsv, float hit_prob, float mis_prob);
 
     void streamD2H(int changed_cnt_condense);
 

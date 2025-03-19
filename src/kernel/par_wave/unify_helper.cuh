@@ -35,7 +35,8 @@ void getUpdatedAddr(int3* stream_VB_keys_D,VoxelBlock** stream_VB_vals_D,
 __global__
 void updateHashOGMWithPntCld(LocMap loc_map, HASH_BASE hash_base, const int time,
                              bool stream_glb_ogm, int3* stream_VB_keys_D, int* changed_cnt,
-                             int ext_obs_num, bool* obs_activated, float3* obsbbx_ll, float3* obsbbx_ur)
+                             int ext_obs_num, bool* obs_activated, float3* obsbbx_ll, float3* obsbbx_ur, 
+                             float hit_prob, float mis_prob)
 {
     int3 loc_crd;
     loc_crd.z = blockIdx.x;
@@ -88,12 +89,16 @@ void updateHashOGMWithPntCld(LocMap loc_map, HASH_BASE hash_base, const int time
         // update observed occ val from sensor/ext observ
         if (count > 0 || occ_flag)
         {
-            set_hashvoxel_occ_val(cur_vox,250.f, 1.f, loc_map._occu_thresh, time);
+            set_hashvoxel_occ_val(cur_vox,250.f, hit_prob, loc_map._occu_thresh, time);
         }
         else if (count < 0)
         {
-            float pbty = min(1.f,static_cast<float>(-count)/10.f);
-            set_hashvoxel_occ_val(cur_vox,0.f,pbty,loc_map._occu_thresh, time);
+            if (mis_prob < 0){
+                mis_prob = min(1.f,static_cast<float>(-count)/10.f);
+            }
+            // float pbty = min(1.f,static_cast<float>(-count)/10.f);
+            // pbty = 0.0f;
+            set_hashvoxel_occ_val(cur_vox,0.f,mis_prob,loc_map._occu_thresh, time);
         }
 
 
@@ -118,7 +123,8 @@ void updateHashOGMWithPntCld(LocMap loc_map, HASH_BASE hash_base, const int time
 __global__
 void updateHashOGMWithSensor(LocMap loc_map, HASH_BASE hash_base, const int time,
                              bool stream_glb_ogm, int3* stream_VB_keys_D, int* changed_cnt,
-                             int ext_obs_num, bool* obs_activated, float3* obsbbx_ll, float3* obsbbx_ur)
+                             int ext_obs_num, bool* obs_activated, float3* obsbbx_ll, float3* obsbbx_ur,
+                             float hit_prob, float mis_prob)
 {
     int3 loc_crd;
     loc_crd.z = blockIdx.x;
@@ -169,11 +175,11 @@ void updateHashOGMWithSensor(LocMap loc_map, HASH_BASE hash_base, const int time
 
         if (new_vox_type == VOXTYPE_OCCUPIED || occ_flag)
         {
-            set_hashvoxel_occ_val(cur_vox,250.f, 0.8f, loc_map._occu_thresh, time);
+            set_hashvoxel_occ_val(cur_vox,250.f, hit_prob, loc_map._occu_thresh, time);
         }
         else if (new_vox_type == VOXTYPE_FREE)
         {
-            set_hashvoxel_occ_val(cur_vox,0.f,0.5f,loc_map._occu_thresh, time);
+            set_hashvoxel_occ_val(cur_vox,0.f, mis_prob, loc_map._occu_thresh, time);
         }
 
 
