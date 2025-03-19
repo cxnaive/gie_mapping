@@ -60,7 +60,7 @@ Please cite our paper if you use this project in your research:
 ## Recompile cuTT 
 cuTT is a library used for faster batch EDT. 
 ````bash
-git clone https://gitee.com/jinxer000/cutt_lts.git
+git clone https://github.com/cxnaive/cutt_lts.git
 cd cutt_lts
 rm ./build/*
 make 
